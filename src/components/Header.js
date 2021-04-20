@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Container, Icon } from "semantic-ui-react";
+import { Menu, Icon } from "semantic-ui-react";
 import { Avatar } from "@material-ui/core";
 import logo from "./../images/logo.png";
 import { useToken } from "../utils/hooks";
@@ -25,18 +25,12 @@ const Header = () => {
         borderRadius: !text ? "17%" : "5%",
         padding: "0",
         height: "28px",
-      }}>
+      }}
+    >
       <Icon name={name} bordered style={{ margin: "auto" }} />
       {text && <span style={{ padding: "0 5px" }}>{text}</span>}
     </div>
   );
-
-  const dummy = {
-    id: 1,
-    name: "David Yappeter",
-  };
-
-  console.log(user);
 
   return (
     <Menu
@@ -45,25 +39,24 @@ const Header = () => {
         backgroundColor: "rgb(2,106,167)",
         color: "white",
         marginBottom: "50px",
-      }}>
+      }}
+    >
       <Menu.Menu position="left">
         <HeaderIcon name="home" />
         <HeaderIcon name="book" text="Boards" />
       </Menu.Menu>
-      <Container textAlign="center">
-        <img
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translateX(-50%) translateY(-50%)",
-            height: "250%",
-            opacity: "0.8",
-          }}
-          alt="logo.png"
-          src={logo}
-        />
-      </Container>
+      <img
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translateX(-50%) translateY(-50%)",
+          height: "250%",
+          opacity: "0.8",
+        }}
+        alt="logo.png"
+        src={logo}
+      />
 
       <Menu.Menu position="right">
         <Avatar
@@ -75,7 +68,8 @@ const Header = () => {
             fontWeight: "bold",
             margin: "auto 5px",
           }}
-          src={user?.me.avatar ? user.me.avatar : null}>
+          src={user?.me.avatar ? user.me.avatar : null}
+        >
           {user && getInitial(user?.me.name)}
         </Avatar>
       </Menu.Menu>
