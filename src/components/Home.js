@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Icon, Menu, Header } from "semantic-ui-react";
+import { Grid, Icon, Menu, Header, Accordion } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
 import "./../App.css";
 
 const Home = () => {
+  const [activeAccord, setActiveAccord] = useState(0);
   const [activeItem, setActiveItem] = useState("boards");
   const { user, loading, called } = useToken();
   const BoxColored = ({ board: { name } }) => (
@@ -14,7 +15,8 @@ const Home = () => {
         width: "100%",
         height: "100%",
         padding: "5px 10px",
-      }}>
+      }}
+    >
       {name}
     </div>
   );
@@ -29,7 +31,8 @@ const Home = () => {
         paddingRight: "5px",
         height: "28px",
         border: "solid 1px rgb(222,222,222)",
-      }}>
+      }}
+    >
       <Icon bordered name={name} style={{ margin: "auto" }} />
       {text && <span style={{ padding: "0 5px" }}>{text}</span>}
     </div>
@@ -37,6 +40,13 @@ const Home = () => {
 
   const teamInitial = (name) => {
     return name.split(" ")[0].charAt(0).toUpperCase();
+  };
+
+  const handleAccord = (e, titleProps) => {
+    const { index } = titleProps;
+    const newAccord = activeAccord === index ? -1 : index;
+
+    setActiveAccord(newAccord);
   };
 
   const SingleTeam = ({ team: { name, members, boards } }) => (
@@ -51,7 +61,8 @@ const Home = () => {
                 backgroundColor: "rgb(2,106,167)",
                 color: "white",
                 borderRadius: "17%",
-              }}>
+              }}
+            >
               {teamInitial(name)}
             </Icon>
             <span> {name}</span>
@@ -61,7 +72,8 @@ const Home = () => {
               style={{
                 display: "flex",
                 justifyContent: "flex-start",
-              }}>
+              }}
+            >
               <HomeTeamIcon name="book" text="Boards" />
               <HomeTeamIcon name="users" text={`Members (${members.length})`} />
             </div>
@@ -92,10 +104,57 @@ const Home = () => {
     );
   };
 
+  const SidebarTeamMenu = ({ team: { name } }) => {
+    return (
+      <Menu.Item>
+        <Accordion>
+          <Accordion.Title
+            active={activeAccord === 0}
+            index={0}
+            onClick={handleAccord}
+          >
+            <Icon
+              bordered
+              style={{
+                backgroundColor: "rgb(2,106,167)",
+                transform: "translateY(-25%)",
+                float: "left",
+                marginRight: "10px",
+                marginLeft: "-5px",
+              }}
+            >
+              {teamInitial(name)}
+            </Icon>
+            {name}
+            <Icon
+              name="dropdown"
+              style={{
+                float: "right",
+              }}
+            />
+          </Accordion.Title>
+          <Accordion.Content active={activeAccord === 0}>
+            <Menu secondary fluid vertical> 
+              <Menu.Item>
+                asdasd
+              </Menu.Item>
+              <Menu.Item>
+                asdasd
+              </Menu.Item>
+              <Menu.Item>
+                asdasd
+              </Menu.Item>
+            </Menu>
+          </Accordion.Content>
+        </Accordion>
+      </Menu.Item>
+    );
+  };
+
   return (
     <Grid container>
       <Grid.Column width={4}>
-        <Menu secondary vertical>
+        <Menu fluid secondary vertical>
           <SidebarMenuItem type="boards" iconName="book">
             Boards
           </SidebarMenuItem>
@@ -104,11 +163,22 @@ const Home = () => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            width: "200px",
-          }}>
+            paddingRight: "20px",
+          }}
+        >
           <Header as="span" content="Teams" />
           <Icon link name="add" />
         </div>
+        <Menu fluid vertical>
+          {called &&
+            !loading &&
+            user?.me.teams.map((team, index) => (
+              <SidebarTeamMenu
+                team={team}
+                key={`sidebar_team_menu_index_${index}`}
+              />
+            ))}
+        </Menu>
       </Grid.Column>
       <Grid.Column width={12}>
         <Grid columns={4}>
