@@ -5,7 +5,7 @@ import logo from "./../images/logo.png";
 import { useToken } from "../utils/hooks";
 
 const Header = () => {
-  const user = useToken();
+  const { user, loading, called } = useToken();
 
   const getInitial = (nameString) => {
     const fullName = nameString.split(" ");
@@ -25,8 +25,7 @@ const Header = () => {
         borderRadius: !text ? "17%" : "5%",
         padding: "0",
         height: "28px",
-      }}
-    >
+      }}>
       <Icon name={name} bordered style={{ margin: "auto" }} />
       {text && <span style={{ padding: "0 5px" }}>{text}</span>}
     </div>
@@ -39,8 +38,7 @@ const Header = () => {
         backgroundColor: "rgb(2,106,167)",
         color: "white",
         marginBottom: "50px",
-      }}
-    >
+      }}>
       <Menu.Menu position="left">
         <HeaderIcon name="home" />
         <HeaderIcon name="book" text="Boards" />
@@ -59,19 +57,20 @@ const Header = () => {
       />
 
       <Menu.Menu position="right">
-        <Avatar
-          style={{
-            backgroundColor: "rgba(0,255,255, 0.5)",
-            width: "32px",
-            height: "32px",
-            fontSize: "1em",
-            fontWeight: "bold",
-            margin: "auto 5px",
-          }}
-          src={user?.me.avatar ? user.me.avatar : null}
-        >
-          {user && getInitial(user?.me.name)}
-        </Avatar>
+        {called && !loading && (
+          <Avatar
+            style={{
+              backgroundColor: "rgba(0,255,255, 0.5)",
+              width: "32px",
+              height: "32px",
+              fontSize: "1em",
+              fontWeight: "bold",
+              margin: "auto 5px",
+            }}
+            src={user?.me.avatar ? user.me.avatar : null}>
+            {user && getInitial(user?.me.name)}
+          </Avatar>
+        )}
       </Menu.Menu>
     </Menu>
   );

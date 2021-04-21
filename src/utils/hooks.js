@@ -6,7 +6,7 @@ import { ME } from "../components/graphql";
 const useToken = () => {
   const [user, setUser] = useState(null);
   const [cookies] = useCookies();
-  const [meUser, { data }] = useLazyQuery(ME, {
+  const [meUser, { data, loading, called }] = useLazyQuery(ME, {
     context: {
       headers: {
         Authorization: cookies.access_token
@@ -16,19 +16,15 @@ const useToken = () => {
     },
   });
   useEffect(() => {
-    waitAsync();
+    meUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies.access_token]);
 
   useEffect(() => {
     setUser(data ? data : null);
-    console.log(data);
   }, [data]);
 
-  const waitAsync = async () => {
-    await meUser();
-  };
-
-  return user;
+  return { user, loading, called };
 };
 
 export { useToken };

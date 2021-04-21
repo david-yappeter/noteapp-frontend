@@ -12,6 +12,16 @@ const ME = gql`
         name
         created_at
         owner_id
+        members {
+          id
+          name
+          email
+          avatar
+        }
+        boards {
+          id
+          name
+        }
       }
     }
   }
