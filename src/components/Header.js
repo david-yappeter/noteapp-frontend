@@ -3,8 +3,20 @@ import { Menu, Icon } from "semantic-ui-react";
 import { Avatar } from "@material-ui/core";
 import logo from "./../images/logo.png";
 import { useToken } from "../utils/hooks";
+import { useLocation } from "react-router";
 
 const Header = () => {
+  const pathLocation = useLocation();
+  var bgColor;
+  var menuColor;
+  if (pathLocation.pathname === "/") {
+    bgColor = "rgba(2,106,167, 1)";
+    menuColor = "rgba(0,255,255, 0.5)";
+  } else if (/team\/\d+\/board\/\d+/.test(pathLocation.pathname)) {
+    bgColor = "rgba(0,0,0, 0.45)";
+    menuColor = "rgba(255,255,255, 0.2)";
+  }
+
   const { user, loading, called } = useToken();
 
   const getInitial = (nameString) => {
@@ -19,7 +31,7 @@ const Header = () => {
   const HeaderIcon = ({ name, text }) => (
     <div
       style={{
-        backgroundColor: "rgba(0,255,255, 0.5)",
+        backgroundColor: menuColor,
         color: "white",
         margin: "auto 2px auto",
         borderRadius: !text ? "17%" : "5%",
@@ -35,9 +47,8 @@ const Header = () => {
     <Menu
       style={{
         position: "relative",
-        backgroundColor: "rgb(2,106,167)",
+        backgroundColor: bgColor,
         color: "white",
-        marginBottom: "50px",
       }}>
       <Menu.Menu position="left">
         <HeaderIcon name="home" />

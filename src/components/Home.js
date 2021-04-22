@@ -4,7 +4,7 @@ import { useToken } from "../utils/hooks";
 import "./../App.css";
 
 const Home = () => {
-  const [activeAccord, setActiveAccord] = useState(0);
+  const [activeAccord, setActiveAccord] = useState(-1);
   const [activeItem, setActiveItem] = useState("boards");
   const { user, loading, called } = useToken();
   const BoxColored = ({ board: { name } }) => (
@@ -15,8 +15,7 @@ const Home = () => {
         width: "100%",
         height: "100%",
         padding: "5px 10px",
-      }}
-    >
+      }}>
       {name}
     </div>
   );
@@ -31,8 +30,7 @@ const Home = () => {
         paddingRight: "5px",
         height: "28px",
         border: "solid 1px rgb(222,222,222)",
-      }}
-    >
+      }}>
       <Icon bordered name={name} style={{ margin: "auto" }} />
       {text && <span style={{ padding: "0 5px" }}>{text}</span>}
     </div>
@@ -61,8 +59,7 @@ const Home = () => {
                 backgroundColor: "rgb(2,106,167)",
                 color: "white",
                 borderRadius: "17%",
-              }}
-            >
+              }}>
               {teamInitial(name)}
             </Icon>
             <span> {name}</span>
@@ -72,8 +69,7 @@ const Home = () => {
               style={{
                 display: "flex",
                 justifyContent: "flex-start",
-              }}
-            >
+              }}>
               <HomeTeamIcon name="book" text="Boards" />
               <HomeTeamIcon name="users" text={`Members (${members.length})`} />
             </div>
@@ -90,9 +86,12 @@ const Home = () => {
     </>
   );
 
-  const SidebarMenuItem = ({ type, children, iconName }) => {
+  const SidebarMenuItem = ({ name, children, iconName }) => {
+    const handleClick = (e, { name }) => {
+      setActiveItem(name);
+    };
     return (
-      <Menu.Item active={activeItem === type}>
+      <Menu.Item name={name} active={activeItem === name} onClick={handleClick}>
         {iconName && (
           <Icon
             name={iconName}
@@ -104,15 +103,21 @@ const Home = () => {
     );
   };
 
-  const SidebarTeamMenu = ({ team: { name } }) => {
+  const SidebarTeamAccordion = ({ icon, text }) => (
+    <Menu.Item style={{ marginTop: "10px" }}>
+      {icon}
+      {text}
+    </Menu.Item>
+  );
+
+  const SidebarTeamMenu = ({ team: { name, members }, index }) => {
     return (
       <Menu.Item>
         <Accordion>
           <Accordion.Title
-            active={activeAccord === 0}
-            index={0}
-            onClick={handleAccord}
-          >
+            active={activeAccord === index}
+            index={index}
+            onClick={handleAccord}>
             <Icon
               bordered
               style={{
@@ -121,8 +126,7 @@ const Home = () => {
                 float: "left",
                 marginRight: "10px",
                 marginLeft: "-5px",
-              }}
-            >
+              }}>
               {teamInitial(name)}
             </Icon>
             {name}
@@ -133,17 +137,32 @@ const Home = () => {
               }}
             />
           </Accordion.Title>
-          <Accordion.Content active={activeAccord === 0}>
-            <Menu secondary fluid vertical> 
-              <Menu.Item>
-                asdasd
-              </Menu.Item>
-              <Menu.Item>
-                asdasd
-              </Menu.Item>
-              <Menu.Item>
-                asdasd
-              </Menu.Item>
+          <Accordion.Content active={activeAccord === index}>
+            <Menu secondary fluid vertical>
+              <SidebarTeamAccordion
+                icon={
+                  <Icon
+                    name="book"
+                    style={{
+                      float: "left",
+                      marginRight: "10px",
+                    }}
+                  />
+                }
+                text="Boards"
+              />
+              <SidebarTeamAccordion
+                icon={
+                  <Icon
+                    name="users"
+                    style={{
+                      float: "left",
+                      marginRight: "10px",
+                    }}
+                  />
+                }
+                text={`Members (${members.length})`}
+              />
             </Menu>
           </Accordion.Content>
         </Accordion>
@@ -152,10 +171,10 @@ const Home = () => {
   };
 
   return (
-    <Grid container>
+    <Grid container style={{ marginTop: "50px" }}>
       <Grid.Column width={4}>
         <Menu fluid secondary vertical>
-          <SidebarMenuItem type="boards" iconName="book">
+          <SidebarMenuItem name="boards" iconName="book">
             Boards
           </SidebarMenuItem>
         </Menu>
@@ -164,8 +183,7 @@ const Home = () => {
             display: "flex",
             justifyContent: "space-between",
             paddingRight: "20px",
-          }}
-        >
+          }}>
           <Header as="span" content="Teams" />
           <Icon link name="add" />
         </div>
@@ -175,6 +193,7 @@ const Home = () => {
             user?.me.teams.map((team, index) => (
               <SidebarTeamMenu
                 team={team}
+                index={index}
                 key={`sidebar_team_menu_index_${index}`}
               />
             ))}
