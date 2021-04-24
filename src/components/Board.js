@@ -1,8 +1,9 @@
-import { Icon, Menu, Card, Container } from "semantic-ui-react";
+import { Icon, Menu, Card, Container, Grid } from "semantic-ui-react";
 import React, { useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { useCookies } from "react-cookie";
 import { BOARD_BY_ID } from "./graphql/index";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Board = (props) => {
   const [cookies] = useCookies();
@@ -41,25 +42,59 @@ const Board = (props) => {
     </div>
   );
 
-  const ListItemDiv = ({ listItem: { name } }) => (
-    <Container
-      fluid
-      draggable
-      style={{
-        padding: "7px 7px",
-        margin: "5px",
-        backgroundColor: "rgba(255,255,255 ,1)",
-        borderRadius: "5px",
-        boxShadow: "0 1px rgba(50,50,50, 0.6)",
-      }}>
-      {name}
-    </Container>
+  const ListItemDiv = ({ listItem: { id, name }, index }) => (
+    <Draggable draggableId={id} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          style={getItemStyle(
+            snapshot.isDragging,
+            provided.draggableProps.style
+          )}>
+          <Container
+            fluid
+            draggable
+            style={{
+              padding: "7px 7px",
+              margin: "5px",
+              backgroundColor: "rgba(255,255,255 ,1)",
+              borderRadius: "5px",
+              boxShadow: "0 1px rgba(50,50,50, 0.6)",
+            }}>
+            {name}
+          </Container>
+        </div>
+      )}
+    </Draggable>
   );
 
-  const ListCard = ({ list: { name, list_items } }) => (
+  const grid = 0;
+  const getItemStyle = (isDragging, draggableStyle) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: "none",
+    padding: grid * 2,
+    // margin: `0 0 ${grid}px 0`,
+
+    // change background colour if dragging
+    background: isDragging ? "lightgreen" : "grey",
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  const getListStyle = (isDraggingOver) => ({
+    background: isDraggingOver ? "lightblue" : "lightgrey",
+    padding: grid,
+    width: 250,
+  });
+
+  const ListCard = ({ list: { name, list_items, index } }) => (
     <Card
       draggable
       style={{
+        alignSelf: "flex-start",
         margin: "0 10px",
         minWidth: "300px",
         maxHeight: "calc(100vh - 120px)",
@@ -74,9 +109,24 @@ const Board = (props) => {
         </Card.Header>
       </Card.Content>
       <Card.Content style={{ overflowY: "auto" }}>
-        {list_items.map((listItem, index) => (
-          <ListItemDiv listItem={listItem} key={`list_item_index_${index}`} />
-        ))}
+        <Droppable droppableId={`testing${index}`}>
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}>
+              {list_items.map((listItem, index) => (
+                <ListItemDiv
+                  listItem={listItem}
+                  index={index}
+                  key={`list_item_index_${index}`}
+                />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </Card.Content>
       <Card.Content>
         <Icon name="add" style={{ marginRight: "15px" }} />
@@ -103,6 +153,32 @@ const Board = (props) => {
     );
   }
 
+  // a little function to help us with reordering the result
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const onDragEnd = (result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(
+      this.state.items,
+      result.source.index,
+      result.destination.index
+    );
+
+    this.setState({
+      items,
+    });
+  };
+
   return (
     <div>
       <Menu
@@ -118,15 +194,22 @@ const Board = (props) => {
         </Menu.Menu>
         <Menu.Menu position="right"></Menu.Menu>
       </Menu>
-      <div
-        style={{
-          display: "flex",
-          overflowX: "auto",
-        }}>
-        {data.board.lists.map((list, index) => (
-          <ListCard list={list} key={`list_card_index_${index}`} />
-        ))}
-      </div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div
+          style={{
+            display: "flex",
+            height: "calc(100vh - 120px)",
+            overflowX: "auto",
+          }}>
+          {data.board.lists.map((list, index) => (
+            <ListCard
+              list={list}
+              key={`list_card_index_${index}`}
+              index={index}
+            />
+          ))}
+        </div>
+      </DragDropContext>
     </div>
   );
 };
