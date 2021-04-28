@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Grid, Icon, Menu, Header, Accordion } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
 import "./../App.css";
@@ -7,24 +8,28 @@ const Home = () => {
   const [activeAccord, setActiveAccord] = useState(-1);
   const [activeItem, setActiveItem] = useState("boards");
   const { user, loading, called } = useToken();
-  const BoxColored = ({ board: { name } }) => (
-    <div
-      style={{
-        borderRadius: "5%",
-        background: "red",
-        width: "100%",
-        height: "100%",
-        padding: "5px 10px",
-      }}>
-      {name}
-    </div>
+  
+  const BoxColored = ({ board: { name }, link }) => (
+    <Link to={link} target="_blank">
+      <div
+        style={{
+          borderRadius: "5%",
+          background: "red",
+          width: "100%",
+          height: "100%",
+          padding: "5px 10px",
+          color: "black",
+        }}>
+        {name}
+      </div>
+    </Link>
   );
 
   const HomeTeamIcon = ({ name, text }) => (
     <div
       style={{
-        backgroundColor: "rgba(0,0,0, 0.03)",
-        color: "gray",
+        backgroundColor: "rgba(200,200,200, 0.8)",
+        color: "black",
         margin: "auto 5px",
         borderRadius: !text ? "17%" : "5%",
         paddingRight: "5px",
@@ -47,7 +52,7 @@ const Home = () => {
     setActiveAccord(newAccord);
   };
 
-  const SingleTeam = ({ team: { name, members, boards } }) => (
+  const SingleTeam = ({ team: { id, name, members, boards } }) => (
     <>
       <Grid.Row>
         <Grid container>
@@ -62,7 +67,13 @@ const Home = () => {
               }}>
               {teamInitial(name)}
             </Icon>
-            <span> {name}</span>
+            <span
+              style={{
+                color: "teal",
+                marginLeft: "10px",
+              }}>
+              {name}
+            </span>
           </Grid.Column>
           <Grid.Column width={12}>
             <div
@@ -79,7 +90,7 @@ const Home = () => {
       <Grid.Row style={{ height: "120px" }}>
         {boards.map((board, index) => (
           <Grid.Column key={`board_index_${index}`}>
-            <BoxColored board={board} />
+            <BoxColored board={board} link={`/team/${id}/board/${board.id}`} />
           </Grid.Column>
         ))}
       </Grid.Row>
@@ -91,7 +102,11 @@ const Home = () => {
       setActiveItem(name);
     };
     return (
-      <Menu.Item name={name} active={activeItem === name} onClick={handleClick}>
+      <Menu.Item
+        name={name}
+        active={activeItem === name}
+        onClick={handleClick}
+        style={{ backgroundColor: "rgba(255,255,255,1)" }}>
         {iconName && (
           <Icon
             name={iconName}
@@ -103,14 +118,17 @@ const Home = () => {
     );
   };
 
-  const SidebarTeamAccordion = ({ icon, text }) => (
-    <Menu.Item style={{ marginTop: "10px" }}>
+  const SidebarTeamAccordion = ({ icon, text, onClick }) => (
+    <Menu.Item style={{ marginTop: "10px" }} onClick={onClick}>
       {icon}
       {text}
     </Menu.Item>
   );
 
   const SidebarTeamMenu = ({ team: { name, members }, index }) => {
+    const handleClick = (e) => {
+      e.preventDefault();
+    };
     return (
       <Menu.Item>
         <Accordion>
@@ -150,6 +168,7 @@ const Home = () => {
                   />
                 }
                 text="Boards"
+                onClick={handleClick}
               />
               <SidebarTeamAccordion
                 icon={
@@ -162,6 +181,7 @@ const Home = () => {
                   />
                 }
                 text={`Members (${members.length})`}
+                onClick={handleClick}
               />
             </Menu>
           </Accordion.Content>
@@ -184,7 +204,7 @@ const Home = () => {
             justifyContent: "space-between",
             paddingRight: "20px",
           }}>
-          <Header as="span" content="Teams" />
+          <Header as="span" content="Teams" style={{ color: "white" }} />
           <Icon link name="add" />
         </div>
         <Menu fluid vertical>

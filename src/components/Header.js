@@ -15,6 +15,9 @@ const Header = () => {
   } else if (/team\/\d+\/board\/\d+/.test(pathLocation.pathname)) {
     bgColor = "rgba(0,0,0, 0.45)";
     menuColor = "rgba(255,255,255, 0.2)";
+  } else {
+    bgColor = "rgba(2,106,167, 1)";
+    menuColor = "rgba(0,255,255, 0.5)";
   }
 
   const { user, loading, called } = useToken();
@@ -49,6 +52,7 @@ const Header = () => {
         position: "relative",
         backgroundColor: bgColor,
         color: "white",
+        marginBottom: "0",
       }}>
       <Menu.Menu position="left">
         <HeaderIcon name="home" />

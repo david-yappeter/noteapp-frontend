@@ -58,24 +58,18 @@ const Board = (props) => {
         borderRadius: "8%",
         margin: "0 5px",
         backgroundColor: "rgb(200,200,200, 0.8)",
-      }}
-    >
+      }}>
       {content}
     </div>
   );
 
   const ListItemDiv = ({ listItem: { id, name }, index }) => (
-    <Draggable
-      key={`${id}`}
-      draggableId={`${id}`}
-      index={index}
-    >
+    <Draggable key={`${id}`} draggableId={`${id}`} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
-        >
+          {...provided.dragHandleProps}>
           <Container
             fluid
             draggable
@@ -85,8 +79,7 @@ const Board = (props) => {
               backgroundColor: "rgba(255,255,255 ,1)",
               borderRadius: "5px",
               boxShadow: "0 1px rgba(50,50,50, 0.6)",
-            }}
-          >
+            }}>
             {name}
           </Container>
         </div>
@@ -103,8 +96,7 @@ const Board = (props) => {
         minWidth: "300px",
         maxHeight: "calc(100vh - 120px)",
         backgroundColor: "#EBECF0",
-      }}
-    >
+      }}>
       <Card.Content>
         <Card.Header>
           <span style={{ fontSize: "0.9em", color: "rgba(40,40,40, 0.8)" }}>
@@ -116,7 +108,10 @@ const Board = (props) => {
       <Card.Content style={{ overflowY: "auto" }}>
         <Droppable droppableId={`${id}`}>
           {(provided, snapshot) => (
-            <div {...provided.droppableProps} ref={provided.innerRef}>
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={{ minHeight: "15px" }}>
               {list_items.map((listItem, index) => (
                 <ListItemDiv
                   listItem={listItem}
@@ -167,12 +162,12 @@ const Board = (props) => {
       return;
     }
 
-    updateList({
-      variables:{
-        id: result.draggableId,
+    // updateList({
+    //   variables:{
+    //     id: result.draggableId,
 
-      }
-    })
+    //   }
+    // })
   };
 
   return (
@@ -182,12 +177,10 @@ const Board = (props) => {
           backgroundColor: "rgba(0,0,0,0)",
           boxShadow: "none",
           border: "0",
-        }}
-      >
+        }}>
         <Menu.Menu
           position="left"
-          style={{ display: "flex", paddingLeft: "20px" }}
-        >
+          style={{ display: "flex", paddingLeft: "20px" }}>
           <FluidMenuDiv content={data.board.name} />
         </Menu.Menu>
         <Menu.Menu position="right"></Menu.Menu>
@@ -198,8 +191,7 @@ const Board = (props) => {
             display: "flex",
             height: "calc(100vh - 120px)",
             overflowX: "auto",
-          }}
-        >
+          }}>
           {data.board.lists.map((list, index) => (
             <ListCard
               list={list}

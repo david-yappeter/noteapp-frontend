@@ -8,6 +8,14 @@ const TEAM_BY_ID = gql`
       created_at
       updated_at
       owner_id
+      members {
+        id
+        name
+        email
+        created_at
+        updated_at
+        avatar
+      }
       boards {
         id
         name

@@ -12,6 +12,7 @@ import { createUploadLink } from "apollo-upload-client";
 import Header from "./components/Header";
 import Home from "./components/Home";
 import Board from "./components/Board";
+import Members from "./components/Members";
 import Test from "./components/Test";
 
 function App() {
@@ -41,14 +42,15 @@ function App() {
       <CookiesProvider>
         <BrowserRouter>
           <div
-            style={{
-              backgroundImage: `url("https://images.wallpaperscraft.com/image/lake_mountains_trees_129959_1366x768.jpg")`,
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              height: "100vh",
-              width: "100vw",
-            }}>
+          // style={{
+          //   backgroundImage: `url("https://images.wallpaperscraft.com/image/lake_mountains_trees_129959_1366x768.jpg")`,
+          //   backgroundPosition: "center",
+          //   backgroundSize: "cover",
+          //   backgroundRepeat: "no-repeat",
+          //   height: "100vh",
+          //   width: "100vw",
+          // }}
+          >
             <Header />
             <Route exact path="/" component={Home} />
             <Route
@@ -56,6 +58,7 @@ function App() {
               path="/team/:teamID/board/:boardID"
               component={Board}
             />
+            <Route exact path="/team/:teamID/members" component={Members} />
             <Route exact path="/test" component={Test} />
           </div>
         </BrowserRouter>
