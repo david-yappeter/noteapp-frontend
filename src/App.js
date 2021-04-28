@@ -58,7 +58,7 @@ function App() {
               path="/team/:teamID/board/:boardID"
               component={Board}
             />
-            <Route exact path="/team/:teamID/members" component={Members} />
+            <Route exact path="/team/:teamID" component={Members} />
             <Route exact path="/test" component={Test} />
           </div>
         </BrowserRouter>

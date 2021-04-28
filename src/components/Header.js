@@ -4,6 +4,7 @@ import { Avatar } from "@material-ui/core";
 import logo from "./../images/logo.png";
 import { useToken } from "../utils/hooks";
 import { useLocation } from "react-router";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const pathLocation = useLocation();
@@ -19,8 +20,19 @@ const Header = () => {
     bgColor = "rgba(2,106,167, 1)";
     menuColor = "rgba(0,255,255, 0.5)";
   }
-
   const { user, loading, called } = useToken();
+
+  const headerButtonData = [
+    {
+      name: "home",
+      link: "/",
+    },
+    {
+      name: "book",
+      text: "Boards",
+      link: "/",
+    },
+  ];
 
   const getInitial = (nameString) => {
     const fullName = nameString.split(" ");
@@ -31,7 +43,7 @@ const Header = () => {
     return initials.toUpperCase();
   };
 
-  const HeaderIcon = ({ name, text }) => (
+  const HeaderIcon = ({ name, text, link }) => (
     <div
       style={{
         backgroundColor: menuColor,
@@ -41,8 +53,10 @@ const Header = () => {
         padding: "0",
         height: "28px",
       }}>
-      <Icon name={name} bordered style={{ margin: "auto" }} />
-      {text && <span style={{ padding: "0 5px" }}>{text}</span>}
+      <Link to={link} style={{ color: "inherit" }}>
+        <Icon name={name} bordered style={{ margin: "auto" }} />
+        {text && <span style={{ padding: "0 5px" }}>{text}</span>}
+      </Link>
     </div>
   );
 
@@ -55,8 +69,9 @@ const Header = () => {
         marginBottom: "0",
       }}>
       <Menu.Menu position="left">
-        <HeaderIcon name="home" />
-        <HeaderIcon name="book" text="Boards" />
+        {headerButtonData.map((headerData) => (
+          <HeaderIcon {...headerData} />
+        ))}
       </Menu.Menu>
       <img
         style={{
