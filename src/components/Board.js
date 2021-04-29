@@ -161,17 +161,10 @@ const Board = (props) => {
     ) {
       return;
     }
-
-    // updateList({
-    //   variables:{
-    //     id: result.draggableId,
-
-    //   }
-    // })
   };
 
   return (
-    <div>
+    <div style={{ marginTop: "20px" }}>
       <Menu
         style={{
           backgroundColor: "rgba(0,0,0,0)",

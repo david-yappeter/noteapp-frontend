@@ -269,7 +269,7 @@ const Home = () => {
             height: "30px",
             display: "flex",
             justifyContent: "space-between",
-            paddingRight: "20px",
+            paddingRight: "10px",
           }}>
           <Header
             as="span"

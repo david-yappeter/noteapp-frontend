@@ -13,6 +13,7 @@ import {
   Search,
 } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
+import { UserSearchReducer } from "../utils/reducer";
 import { REMOVE_MEMBER, TEAM_BY_ID } from "./graphql/index";
 import InviteMember from "./InviteMember";
 import NewBoard from "./NewBoard";
@@ -23,13 +24,14 @@ const Members = (props, selectSection) => {
   const { teamID } = props.match.params;
   const [cookies] = useCookies();
   const [modalOpen, setModalOpen] = useState(false);
+  const { value: state } = UserSearchReducer();
   const { user: meUser, loading: userLoading, called: userCalled } = useToken();
   const [sectionActive, setSectionActive] = useState(
     localStorage.getItem("teamSectionSelection") != undefined
       ? parseInt(localStorage.getItem("teamSectionSelection"))
       : 0
   );
-
+  const { loading: searchLoading, results, value: searchVal } = state;
   const [
     removeMember,
     {
@@ -282,9 +284,14 @@ const Members = (props, selectSection) => {
           />
         </div>
         <hr />
-        {members.map((member) => (
-          <MembersList member={member} teamID={teamID} />
-        ))}
+        {searchLoading || !results ? console.log("aa") : console.log("bb")}
+        {searchLoading || searchVal === ""
+          ? members.map((member) => (
+              <MembersList member={member} teamID={teamID} />
+            ))
+          : results.map(({ user: member }) => (
+              <MembersList member={member} teamID={teamID} />
+            ))}
       </Container>
     );
   };

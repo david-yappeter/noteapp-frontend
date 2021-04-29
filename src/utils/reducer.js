@@ -24,8 +24,13 @@ const initialState = {
 
 const UserSearchReducer = () => {
   const [state, dispatch] = useReducer(exampleReducer, initialState);
+  const [value, setValue] = useState(state);
 
-  return [state, dispatch];
+  useEffect(() => {
+    setValue(state);
+  }, [state]);
+
+  return { state, dispatch, value };
 };
 
 export { UserSearchReducer };

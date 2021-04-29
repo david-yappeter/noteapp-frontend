@@ -5,13 +5,13 @@ import { UserSearchReducer } from "../utils/reducer";
 
 const UserSearch = ({ users }) => {
   const source = users.map((user) => ({
-    id: user.id,
     title: user.name,
     description: user.email,
     image: user.avatar,
+    user: user,
   }));
 
-  const [state, dispatch] = UserSearchReducer();
+  const { state, dispatch } = UserSearchReducer();
 
   const { loading, results, value } = state;
 
@@ -30,9 +30,10 @@ const UserSearch = ({ users }) => {
       const isMatch = (result) =>
         re.test(result.title) || re.test(result.description);
 
+      const filtered = _.filter(source, isMatch);
       dispatch({
         type: "FINISH_SEARCH",
-        results: _.filter(source, isMatch),
+        results: filtered,
       });
     }, 300);
   }, []);
@@ -58,6 +59,18 @@ const UserSearch = ({ users }) => {
           value={value}
         />
       </Grid.Column>
+      {/* <Grid.Column width={10}>
+        <Segment>
+          <Header>State</Header>
+          <pre style={{ overflowX: "auto" }}>
+            {JSON.stringify({ loading, results, value }, null, 2)}
+          </pre>
+          <Header>Options</Header>
+          <pre style={{ overflowX: "auto" }}>
+            {JSON.stringify(source, null, 2)}
+          </pre>
+        </Segment>
+      </Grid.Column> */}
     </Grid>
   );
 };

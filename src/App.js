@@ -14,6 +14,7 @@ import Home from "./components/Home";
 import Board from "./components/Board";
 import Members from "./components/Members";
 import Test from "./components/Test";
+import LoginPage from "./components/LoginPage";
 
 function App() {
   const httpLink = createUploadLink({
@@ -52,7 +53,8 @@ function App() {
           // }}
           >
             <Header />
-            <Route exact path="/" component={Home} />
+            <Route exact path="/" component={LoginPage} />
+            <Route exact path="/home" component={Home} />
             <Route
               exact
               path="/team/:teamID/board/:boardID"
