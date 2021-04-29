@@ -1,5 +1,19 @@
 import { gql } from "@apollo/client";
 
+const TEAM_CREATE = gql`
+  mutation TEAM_CREATE($name: String!) {
+    team {
+      create(name: $name) {
+        id
+        name
+        created_at
+        updated_at
+        owner_id
+      }
+    }
+  }
+`;
+
 const REMOVE_MEMBER = gql`
   mutation REMOVE_MEMBER($teamID: ID!, $userID: ID!) {
     team {
@@ -8,4 +22,4 @@ const REMOVE_MEMBER = gql`
   }
 `;
 
-export { REMOVE_MEMBER };
+export { REMOVE_MEMBER, TEAM_CREATE };

@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
 import {
@@ -9,17 +9,27 @@ import {
   Header,
   Icon,
   Modal,
+  Popup,
   Search,
 } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
 import { REMOVE_MEMBER, TEAM_BY_ID } from "./graphql/index";
+import InviteMember from "./InviteMember";
+import NewBoard from "./NewBoard";
+import TeamHeader from "./TeamHeader";
+import UserSearch from "./UserSearch";
 
-const Members = (props) => {
+const Members = (props, selectSection) => {
   const { teamID } = props.match.params;
   const [cookies] = useCookies();
   const [modalOpen, setModalOpen] = useState(false);
   const { user: meUser, loading: userLoading, called: userCalled } = useToken();
-  const [sectionActive, setSectionActive] = useState(0);
+  const [sectionActive, setSectionActive] = useState(
+    localStorage.getItem("teamSectionSelection") != undefined
+      ? parseInt(localStorage.getItem("teamSectionSelection"))
+      : 0
+  );
+
   const [
     removeMember,
     {
@@ -63,20 +73,16 @@ const Members = (props) => {
     variables: props.match.params,
   });
 
-  const sectionItems = [
-    {
-      icon: "book",
-      text: "Boards",
-    },
-    {
-      icon: "users",
-      text: "Members",
-    },
-  ];
-
   useEffect(() => {
     teamById();
   }, []);
+
+  if (!teamByIdCalled || (teamByIdCalled && teamByIdLoading)) {
+    return <h2> Loading . . </h2>;
+  }
+
+  const { team } = teamByIdData;
+  const { owner_id: ownerID, members } = team;
 
   const BoxColored = ({ board: { name }, link }) => (
     <Link to={link} target="_blank">
@@ -94,61 +100,23 @@ const Members = (props) => {
     </Link>
   );
 
-  const Section = ({ icon, text, index }) => {
-    const handleClick = () => {
-      setSectionActive(index);
-    };
-    return (
-      <div
-        //rgb(193,199,208)
-        style={{
-          fontWeight: "bold",
-          border: "1px solid rgba(200,200,200,0.8)",
-          borderBottom: "none",
-          padding: "5px 10px",
-          margin: " 0 7px",
-          backgroundColor:
-            sectionActive === index
-              ? "rgba(255,255,255,1)"
-              : "rgba(223,225,230, 1)",
-        }}
-        onClick={handleClick}>
-        {icon && (
-          <Icon name={icon} size="small" style={{ marginRight: "5px" }} />
-        )}
-        {text}
-      </div>
-    );
-  };
-
-  const TeamLogo = ({ teamName }) => {
-    return (
-      <Icon
-        bordered
-        size="huge"
-        style={{
-          borderRadius: "10px",
-          borderWidth: "0",
-          background: "linear-gradient(to bottom, red, orange",
-          color: "white",
-          transform: "scale(0.7)",
-        }}>
-        {teamName.charAt(0)}
-      </Icon>
-    );
-  };
-
   const BoardsSection = ({ boards }) => {
     return (
-      <Grid container columns={4} style={{ margin: "0", height: "120px" }}>
+      <Grid container columns={4} style={{ margin: "0" }}>
         {boards.map((board, index) => (
-          <Grid.Column key={`board_section_grid_id_${index}`}>
+          <Grid.Column
+            key={`board_section_grid_id_${index}`}
+            style={{ height: "120px" }}>
             <BoxColored
               board={board}
               link={`/team/${teamID}/board/${board.id}`}
             />
           </Grid.Column>
         ))}
+
+        <Grid.Column style={{ height: "120px" }}>
+          <NewBoard team={team} />
+        </Grid.Column>
       </Grid>
     );
   };
@@ -244,6 +212,18 @@ const Members = (props) => {
                 {email}
               </Header>
             </span>
+            {id === ownerID && (
+              <Header
+                as="h4"
+                style={{
+                  margin: "0",
+                  display: "inline",
+                  alignSelf: "center",
+                  marginLeft: "20px",
+                }}>
+                (Owner)
+              </Header>
+            )}
           </div>
           <div>
             <RemoveMemberConfirmation
@@ -284,12 +264,22 @@ const Members = (props) => {
             justifyContent: "space-between",
             marginBottom: "20px",
           }}>
-          <Search />
-          <Button
-            style={{ color: "white", backgroundColor: "rgba(97,189,79, 1)" }}>
-            <Icon name="user plus" />
-            Invite Member
-          </Button>
+          <UserSearch users={members} />
+          <Popup
+            content={<InviteMember />}
+            trigger={
+              <Button
+                style={{
+                  color: "white",
+                  backgroundColor: "rgba(97,189,79, 1)",
+                }}>
+                <Icon name="user plus" />
+                Invite Member
+              </Button>
+            }
+            on="click"
+            position="bottom center"
+          />
         </div>
         <hr />
         {members.map((member) => (
@@ -299,45 +289,13 @@ const Members = (props) => {
     );
   };
 
-  if (!teamByIdCalled || (teamByIdCalled && teamByIdLoading)) {
-    return <h2> Loading . . </h2>;
-  }
-
-  const { team } = teamByIdData;
-
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          position: "relative",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "rgba(244,245,247, 1)",
-          height: "220px",
-        }}>
-        <TeamLogo teamName={team?.name} />
-        <Header
-          content={team.name}
-          size="large"
-          style={{ margin: "0", padding: "0" }}
-        />
-        <div
-          style={{
-            bottom: "0",
-            display: "flex",
-            position: "absolute",
-          }}>
-          {sectionItems.map((section, index) => (
-            <Section
-              icon={section.icon}
-              text={section.text}
-              key={`section_id_${index}`}
-              index={index}
-            />
-          ))}
-        </div>
-      </div>
+      <TeamHeader
+        team={team}
+        sectionActive={sectionActive}
+        setSectionActive={setSectionActive}
+      />
       <div>{sectionActive === 0 && <BoardsSection boards={team.boards} />}</div>
       <div>
         {sectionActive === 1 && (

@@ -1,26 +1,87 @@
+import { makeStyles } from "@material-ui/core/styles";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Grid, Icon, Menu, Header, Accordion } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
 import "./../App.css";
+import NewBoard from "./NewBoard";
+import NewTeam from "./NewTeam";
+
+const useStyles = makeStyles({
+  homeBoard: {
+    position: "relative",
+    borderRadius: "5%",
+    background: "rgba(50,50,50, 0.4)",
+    width: "100%",
+    height: "100%",
+    padding: "5px 10px",
+    color: "black",
+    transition: "background-color 0.3s",
+    transition: "display 1s",
+    "&:hover": {
+      backgroundColor: "rgba(25,25,25, 0.7)",
+      transition: "background-color 0.3s",
+    },
+  },
+  iconBoxHover: {
+    display: "none",
+    transform: "translateX(-50%) translateY(-80%)",
+    position: "absolute",
+    right: "0",
+    bottom: "0",
+    "&:hover": {
+      display: "none",
+      backgroundColor: "white",
+      transition: "all 1s",
+    },
+  },
+  // icon: {
+  // },
+});
 
 const Home = () => {
+  const classes = useStyles();
   const [activeAccord, setActiveAccord] = useState(-1);
   const [activeItem, setActiveItem] = useState("boards");
   const { user, loading, called } = useToken();
-  
+
+  const sidebarTeamItems = (team) => {
+    return [
+      {
+        name: "book",
+        text: "Boards",
+        link: `/team/${team.id}`,
+      },
+      {
+        name: "users",
+        text: "Members",
+        link: `/team/${team.id}`,
+      },
+    ];
+  };
+
+  const singleTeamItems = (team, members) => {
+    return [
+      {
+        name: "book",
+        text: "Boards",
+        link: `/team/${team.id}`,
+      },
+      {
+        name: "users",
+        text: `Members (${members.length})`,
+        link: `/team/${team.id}`,
+      },
+    ];
+  };
+
   const BoxColored = ({ board: { name }, link }) => (
     <Link to={link} target="_blank">
-      <div
-        style={{
-          borderRadius: "5%",
-          background: "red",
-          width: "100%",
-          height: "100%",
-          padding: "5px 10px",
-          color: "black",
-        }}>
+      <div className={classes.homeBoard}>
         {name}
+        <div className={classes.iconBoxHover}>
+          <Icon name="star" className={classes.icon} />
+        </div>
       </div>
     </Link>
   );
@@ -52,50 +113,61 @@ const Home = () => {
     setActiveAccord(newAccord);
   };
 
-  const SingleTeam = ({ team: { id, name, members, boards } }) => (
-    <>
-      <Grid.Row>
-        <Grid container>
-          <Grid.Column width={4}>
-            <Icon
-              bordered
-              style={{
-                margin: "auto",
-                backgroundColor: "rgb(2,106,167)",
-                color: "white",
-                borderRadius: "17%",
-              }}>
-              {teamInitial(name)}
-            </Icon>
-            <span
-              style={{
-                color: "teal",
-                marginLeft: "10px",
-              }}>
-              {name}
-            </span>
-          </Grid.Column>
-          <Grid.Column width={12}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-              }}>
-              <HomeTeamIcon name="book" text="Boards" />
-              <HomeTeamIcon name="users" text={`Members (${members.length})`} />
-            </div>
-          </Grid.Column>
-        </Grid>
-      </Grid.Row>
-      <Grid.Row style={{ height: "120px" }}>
+  const SingleTeam = ({ team }) => {
+    const { id, name, members, boards } = team;
+    return (
+      <>
+        <Grid.Row>
+          <Grid container>
+            <Grid.Column width={4}>
+              <Icon
+                bordered
+                style={{
+                  margin: "auto",
+                  backgroundColor: "rgb(2,106,167)",
+                  color: "white",
+                  borderRadius: "17%",
+                }}>
+                {teamInitial(name)}
+              </Icon>
+              <span
+                style={{
+                  color: "black",
+                  marginLeft: "10px",
+                }}>
+                {name}
+              </span>
+            </Grid.Column>
+            <Grid.Column width={12}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                }}>
+                {singleTeamItems(team, members).map((item, index) => (
+                  <Link
+                    to={item.link}
+                    onClick={() =>
+                      localStorage.setItem("teamSectionSelection", index)
+                    }>
+                    <HomeTeamIcon name={item.name} text={item.text} />
+                  </Link>
+                ))}
+              </div>
+            </Grid.Column>
+          </Grid>
+        </Grid.Row>
         {boards.map((board, index) => (
-          <Grid.Column key={`board_index_${index}`}>
+          <Grid.Column key={`board_index_${index}`} style={{ height: "120px" }}>
             <BoxColored board={board} link={`/team/${id}/board/${board.id}`} />
           </Grid.Column>
         ))}
-      </Grid.Row>
-    </>
-  );
+        <Grid.Column style={{ height: "120px" }}>
+          <NewBoard team={team} />
+        </Grid.Column>
+      </>
+    );
+  };
 
   const SidebarMenuItem = ({ name, children, iconName }) => {
     const handleClick = (e, { name }) => {
@@ -118,17 +190,21 @@ const Home = () => {
     );
   };
 
-  const SidebarTeamAccordion = ({ icon, text, onClick }) => (
-    <Menu.Item style={{ marginTop: "10px" }} onClick={onClick}>
-      {icon}
-      {text}
-    </Menu.Item>
+  const SidebarTeamAccordion = ({ icon, text, link, index }) => (
+    <Link
+      to={link}
+      onClick={() => {
+        localStorage.setItem("teamSectionSelection", index);
+      }}>
+      <Menu.Item style={{ marginTop: "10px" }} onClick={() => {}}>
+        {icon}
+        {text}
+      </Menu.Item>
+    </Link>
   );
 
-  const SidebarTeamMenu = ({ team: { name, members }, index }) => {
-    const handleClick = (e) => {
-      e.preventDefault();
-    };
+  const SidebarTeamMenu = ({ team, index }) => {
+    const { name, members } = team;
     return (
       <Menu.Item>
         <Accordion>
@@ -157,32 +233,22 @@ const Home = () => {
           </Accordion.Title>
           <Accordion.Content active={activeAccord === index}>
             <Menu secondary fluid vertical>
-              <SidebarTeamAccordion
-                icon={
-                  <Icon
-                    name="book"
-                    style={{
-                      float: "left",
-                      marginRight: "10px",
-                    }}
-                  />
-                }
-                text="Boards"
-                onClick={handleClick}
-              />
-              <SidebarTeamAccordion
-                icon={
-                  <Icon
-                    name="users"
-                    style={{
-                      float: "left",
-                      marginRight: "10px",
-                    }}
-                  />
-                }
-                text={`Members (${members.length})`}
-                onClick={handleClick}
-              />
+              {sidebarTeamItems(team).map(({ name, text, link }, index) => (
+                <SidebarTeamAccordion
+                  icon={
+                    <Icon
+                      name={name}
+                      style={{
+                        float: "left",
+                        marginRight: "10px",
+                      }}
+                    />
+                  }
+                  text={text}
+                  link={link}
+                  index={index}
+                />
+              ))}
             </Menu>
           </Accordion.Content>
         </Accordion>
@@ -200,12 +266,17 @@ const Home = () => {
         </Menu>
         <div
           style={{
+            height: "30px",
             display: "flex",
             justifyContent: "space-between",
             paddingRight: "20px",
           }}>
-          <Header as="span" content="Teams" style={{ color: "white" }} />
-          <Icon link name="add" />
+          <Header
+            as="span"
+            content="Teams"
+            style={{ margin: "0", alignSelf: "center", color: "black" }}
+          />
+          <NewTeam />
         </div>
         <Menu fluid vertical>
           {called &&
