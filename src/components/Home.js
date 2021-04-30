@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Grid, Icon, Menu, Header, Accordion } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
 import "./../App.css";
+import BoardDelete from "./BoardDelete";
 import NewBoard from "./NewBoard";
 import NewTeam from "./NewTeam";
 
@@ -12,6 +13,8 @@ const useStyles = makeStyles({
     position: "relative",
     borderRadius: "5%",
     background: "rgba(50,50,50, 0.4)",
+    top: "0",
+    left: "0",
     width: "100%",
     height: "100%",
     padding: "5px 10px",
@@ -24,19 +27,17 @@ const useStyles = makeStyles({
     },
   },
   iconBoxHover: {
-    display: "none",
-    transform: "translateX(-50%) translateY(-80%)",
+    opacity: "0",
     position: "absolute",
-    right: "0",
-    bottom: "0",
+    top: "0",
+    left: "0",
+    height: "100%",
+    width: "100%",
     "&:hover": {
-      display: "none",
-      backgroundColor: "white",
-      transition: "all 1s",
+      opacity: "unset",
+      transition: "all 0.5s",
     },
   },
-  // icon: {
-  // },
 });
 
 const Home = () => {
@@ -44,6 +45,7 @@ const Home = () => {
   const [activeAccord, setActiveAccord] = useState(-1);
   const [activeItem, setActiveItem] = useState("boards");
   const { user, loading, called } = useToken();
+  // const [setModalOpen, BoardDeleteComponent] = BoardDelete(board)
 
   const sidebarTeamItems = (team) => {
     return [
@@ -75,16 +77,19 @@ const Home = () => {
     ];
   };
 
-  const BoxColored = ({ board: { name }, link }) => (
-    <Link to={link} target="_blank">
-      <div className={classes.homeBoard}>
-        {name}
-        <div className={classes.iconBoxHover}>
-          <Icon name="star" className={classes.icon} />
+  const BoxColored = ({ board, link }) => {
+    const { name } = board;
+    return (
+      <Link to={link} target="_blank">
+        <div className={classes.homeBoard}>
+          {name}
+          <div className={classes.iconBoxHover}>
+            <BoardDelete board={board} />
+          </div>
         </div>
-      </div>
-    </Link>
-  );
+      </Link>
+    );
+  };
 
   const HomeTeamIcon = ({ name, text }) => (
     <div

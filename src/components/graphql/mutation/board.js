@@ -14,5 +14,12 @@ const BOARD_CREATE = gql`
   }
 `;
 
+const BOARD_DELETE = gql`
+  mutation BOARD_DELETE($id: ID!) {
+    board {
+      delete(id: $id)
+    }
+  }
+`;
 
-export {BOARD_CREATE}
+export { BOARD_CREATE, BOARD_DELETE };

@@ -21,6 +21,7 @@ const ME = gql`
         boards {
           id
           name
+          team_id
         }
       }
     }
