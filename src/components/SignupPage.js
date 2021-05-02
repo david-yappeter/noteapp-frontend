@@ -1,12 +1,13 @@
-import { Card, Dimmer, Loader } from "semantic-ui-react";
-import React, { useState } from "react";
+import { Card } from "semantic-ui-react";
+import React, { useEffect } from "react";
 import logo from "./../images/logo black crop.png";
 import { makeStyles } from "@material-ui/core/styles";
 import { useMutation } from "@apollo/client";
-import { LOGIN } from "./graphql";
+import { REGISTER } from "./graphql";
 import { useCookies } from "react-cookie";
-import { Redirect, useHistory, withRouter } from "react-router";
-import { useForm } from "./../utils/hooks";
+import { useHistory, useParams } from "react-router";
+import { useForm } from "../utils/hooks";
+import queryString from "query-string";
 
 const useStyles = makeStyles({
   input: {
@@ -39,28 +40,42 @@ const useStyles = makeStyles({
   },
 });
 
-const LoginPage = () => {
+const SignupPage = (props) => {
   const [, setCookies] = useCookies();
+  let queryParams = queryString.parse(props.location.search);
   const classes = useStyles();
   const history = useHistory();
   const initialValue = {
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   };
-  const { inputVariables, onChange, onSubmit } = useForm(initialValue, () => {
-    loginUser({
-      variables: inputVariables,
-    });
-  });
-  const [loginUser, { loading }] = useMutation(LOGIN, {
+  const { inputVariables, setInputVariables, onChange, onSubmit } = useForm(
+    initialValue,
+    () => {
+      registerUser({
+        variables: inputVariables,
+      });
+    }
+  );
+  const [registerUser, { loading }] = useMutation(REGISTER, {
     update(cache, result) {
-      setCookies("access_token", result.data.auth.login.token);
+      console.log(result);
+      setCookies("access_token", result.data.auth.register.token);
       history.push("/home");
     },
     onError(err) {
       console.log(err);
     },
   });
+
+  useEffect(() => {
+    setInputVariables((prev) => ({
+      ...prev,
+      ...queryParams,
+    }));
+  }, []);
 
   return (
     <div
@@ -92,10 +107,20 @@ const LoginPage = () => {
           <Card.Header
             textAlign="center"
             style={{ margin: "20px 0", fontWeight: "bold" }}>
-            Log in to Wello
+            Sign up for your account
           </Card.Header>
+
           <Card.Content>
             <form onSubmit={onSubmit}>
+              <input
+                name="name"
+                value={inputVariables.name}
+                onChange={onChange}
+                placeholder="Enter name"
+                autoFocus
+                className={classes.input}
+                disabled={loading}
+              />
               <input
                 name="email"
                 value={inputVariables.email}
@@ -114,11 +139,20 @@ const LoginPage = () => {
                 className={classes.input}
                 disabled={loading}
               />
+              <input
+                name="confirmPassword"
+                value={inputVariables.confirmPassword}
+                onChange={onChange}
+                type="password"
+                placeholder="Enter confirm password"
+                className={classes.input}
+                disabled={loading}
+              />
               <button
                 className={classes.button}
                 onSubmit={onSubmit}
                 disabled={loading}>
-                Log in
+                Sign Up
               </button>
             </form>
           </Card.Content>
@@ -128,4 +162,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

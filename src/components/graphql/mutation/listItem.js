@@ -1,5 +1,15 @@
 import { gql } from "@apollo/client";
 
+const LIST_ITEM_CREATE = gql`
+  mutation LIST_ITEM_CREATE($name: String!, $listID: ID!) {
+    list_item {
+      create(input: { name: $name, list_id: $listID }) {
+        id
+      }
+    }
+  }
+`;
+
 const LIST_ITEM_MOVE = gql`
   mutation MOVE_LIST_ITEM(
     $id: ID!
@@ -22,4 +32,12 @@ const LIST_ITEM_MOVE = gql`
   }
 `;
 
-export { LIST_ITEM_MOVE };
+const LIST_ITEM_DELETE = gql`
+  mutation LIST_ITEM_DELETE($id: ID!) {
+    list_item {
+      delete(id: $id)
+    }
+  }
+`;
+
+export { LIST_ITEM_MOVE, LIST_ITEM_CREATE, LIST_ITEM_DELETE };

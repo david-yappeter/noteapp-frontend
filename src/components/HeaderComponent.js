@@ -1,13 +1,18 @@
 import React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import { Avatar } from "@material-ui/core";
-import logo from "./../images/logo.png";
+import logo from "./../images/logo white.png";
 import { useToken } from "../utils/hooks";
-import { useLocation } from "react-router";
+import { Redirect, useHistory, useLocation } from "react-router";
 import { Link } from "react-router-dom";
+import HeaderUserPopUp from "./HeaderUserPopUp";
+import Cookies from "universal-cookie";
+import { useCookies } from "react-cookie";
 
-const Header = () => {
+const HeaderComponent = () => {
   const pathLocation = useLocation();
+  const history = useHistory();
+  const [cookies] = useCookies();
   var bgColor;
   var menuColor;
   if (pathLocation.pathname === "/") {
@@ -33,6 +38,10 @@ const Header = () => {
       link: "/",
     },
   ];
+
+  if (!cookies.access_token) {
+    return <Redirect to="/" />;
+  }
 
   const getInitial = (nameString) => {
     const fullName = nameString.split(" ");
@@ -67,10 +76,11 @@ const Header = () => {
         backgroundColor: bgColor,
         color: "white",
         marginBottom: "0",
+        marginTop: "0",
       }}>
       <Menu.Menu position="left">
-        {headerButtonData.map((headerData) => (
-          <HeaderIcon {...headerData} />
+        {headerButtonData.map((headerData, index) => (
+          <HeaderIcon key={index} {...headerData} />
         ))}
       </Menu.Menu>
       <img
@@ -80,30 +90,23 @@ const Header = () => {
           top: "50%",
           transform: "translateX(-50%) translateY(-50%)",
           height: "250%",
+          cursor: "pointer",
           opacity: "0.8",
         }}
         alt="logo.png"
         src={logo}
+        onClick={() => {
+          if (!cookies.access_token) {
+            history.push("/home");
+          }
+        }}
       />
 
       <Menu.Menu position="right">
-        {called && !loading && (
-          <Avatar
-            style={{
-              backgroundColor: "rgba(0,255,255, 0.5)",
-              width: "32px",
-              height: "32px",
-              fontSize: "1em",
-              fontWeight: "bold",
-              margin: "auto 5px",
-            }}
-            src={user?.me.avatar ? user.me.avatar : null}>
-            {user && getInitial(user?.me.name)}
-          </Avatar>
-        )}
+        {called && !loading && <HeaderUserPopUp />}
       </Menu.Menu>
     </Menu>
   );
 };
 
-export default Header;
+export default HeaderComponent;

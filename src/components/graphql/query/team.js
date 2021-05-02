@@ -21,6 +21,7 @@ const TEAM_BY_ID = gql`
         name
         created_at
         updated_at
+        team_id
         lists {
           id
           name

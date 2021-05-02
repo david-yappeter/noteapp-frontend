@@ -15,6 +15,7 @@ import {
 import { useToken } from "../utils/hooks";
 import { UserSearchReducer } from "../utils/reducer";
 import { REMOVE_MEMBER, TEAM_BY_ID } from "./graphql/index";
+import HeaderComponent from "./HeaderComponent";
 import InviteMember from "./InviteMember";
 import NewBoard from "./NewBoard";
 import TeamHeader from "./TeamHeader";
@@ -298,6 +299,7 @@ const Members = (props, selectSection) => {
 
   return (
     <>
+      <HeaderComponent />
       <TeamHeader
         team={team}
         sectionActive={sectionActive}

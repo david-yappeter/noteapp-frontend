@@ -7,6 +7,7 @@ const BOARD_BY_ID = gql`
       name
       created_at
       updated_at
+      team_id
       lists {
         id
         name

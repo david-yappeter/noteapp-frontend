@@ -5,6 +5,7 @@ import { Grid, Icon, Menu, Header, Accordion } from "semantic-ui-react";
 import { useToken } from "../utils/hooks";
 import "./../App.css";
 import BoardDelete from "./BoardDelete";
+import HeaderComponent from "./HeaderComponent";
 import NewBoard from "./NewBoard";
 import NewTeam from "./NewTeam";
 
@@ -262,49 +263,52 @@ const Home = () => {
   };
 
   return (
-    <Grid container style={{ marginTop: "50px" }}>
-      <Grid.Column width={4}>
-        <Menu fluid secondary vertical>
-          <SidebarMenuItem name="boards" iconName="book">
-            Boards
-          </SidebarMenuItem>
-        </Menu>
-        <div
-          style={{
-            height: "30px",
-            display: "flex",
-            justifyContent: "space-between",
-            paddingRight: "10px",
-          }}>
-          <Header
-            as="span"
-            content="Teams"
-            style={{ margin: "0", alignSelf: "center", color: "black" }}
-          />
-          <NewTeam />
-        </div>
-        <Menu fluid vertical>
-          {called &&
-            !loading &&
-            user?.me.teams.map((team, index) => (
-              <SidebarTeamMenu
-                team={team}
-                index={index}
-                key={`sidebar_team_menu_index_${index}`}
-              />
-            ))}
-        </Menu>
-      </Grid.Column>
-      <Grid.Column width={12}>
-        <Grid columns={4}>
-          {called &&
-            !loading &&
-            user?.me.teams.map((team, index) => (
-              <SingleTeam team={team} key={`team_index_${index}`} />
-            ))}
-        </Grid>
-      </Grid.Column>
-    </Grid>
+    <>
+      <HeaderComponent />
+      <Grid container style={{ marginTop: "50px" }}>
+        <Grid.Column width={4}>
+          <Menu fluid secondary vertical>
+            <SidebarMenuItem name="boards" iconName="book">
+              Boards
+            </SidebarMenuItem>
+          </Menu>
+          <div
+            style={{
+              height: "30px",
+              display: "flex",
+              justifyContent: "space-between",
+              paddingRight: "10px",
+            }}>
+            <Header
+              as="span"
+              content="Teams"
+              style={{ margin: "0", alignSelf: "center", color: "black" }}
+            />
+            <NewTeam />
+          </div>
+          <Menu fluid vertical>
+            {called &&
+              !loading &&
+              user?.me.teams.map((team, index) => (
+                <SidebarTeamMenu
+                  team={team}
+                  index={index}
+                  key={`sidebar_team_menu_index_${index}`}
+                />
+              ))}
+          </Menu>
+        </Grid.Column>
+        <Grid.Column width={12}>
+          <Grid columns={4}>
+            {called &&
+              !loading &&
+              user?.me.teams.map((team, index) => (
+                <SingleTeam team={team} key={`team_index_${index}`} />
+              ))}
+          </Grid>
+        </Grid.Column>
+      </Grid>
+    </>
   );
 };
 
