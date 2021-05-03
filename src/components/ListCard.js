@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Button, Card, Header, Icon, Modal } from "semantic-ui-react";
+import {
+  Button,
+  Card,
+  Dimmer,
+  Header,
+  Icon,
+  Loader,
+  Modal,
+} from "semantic-ui-react";
 import { Droppable } from "react-beautiful-dnd";
 import ListItemDiv from "./ListItemDiv";
 import { useMutation } from "@apollo/client";
@@ -7,7 +15,7 @@ import { LIST_DELETE, TEAM_BY_ID } from "./graphql";
 import { useCookies } from "react-cookie";
 import AddListItem from "./AddListItem";
 
-const ListCard = ({ list, teamID }) => {
+const ListCard = ({ list, teamID, loading: updateLoading }) => {
   const { id, name, list_items, index } = list;
   const [cookies] = useCookies();
   const [modalOpen, setModalOpen] = useState(false);
@@ -49,15 +57,13 @@ const ListCard = ({ list, teamID }) => {
         backgroundColor: "#EBECF0",
       }}>
       <Card.Content>
+        <Dimmer active={updateLoading} inverted>
+          <Loader inverted content="Loading" />
+        </Dimmer>
         <Card.Header>
           <span style={{ fontSize: "0.9em", color: "rgba(40,40,40, 0.8)" }}>
             {name}
           </span>
-          {/* <Icon
-            style={{ float: "right", cursor: "pointer" }}
-            name="trash"
-            onClick={() => setModalOpen(true)}
-          /> */}
           <Modal
             open={modalOpen}
             onOpen={() => setModalOpen(true)}

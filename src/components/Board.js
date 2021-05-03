@@ -1,4 +1,4 @@
-import { Icon, Menu, Card, Container } from "semantic-ui-react";
+import { Menu } from "semantic-ui-react";
 import React, { useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCookies } from "react-cookie";
@@ -26,26 +26,33 @@ const Board = (props) => {
       console.log(err);
     },
   });
-  const [updateList, { updateListL, updateListC, updateListD }] = useMutation(
-    LIST_ITEM_MOVE,
-    {
-      context: {
-        headers: {
-          Authorization: cookies.access_token
-            ? `Bearer ${cookies.access_token}`
-            : "",
+  const [updateList, { updateListL }] = useMutation(LIST_ITEM_MOVE, {
+    context: {
+      headers: {
+        Authorization: cookies.access_token
+          ? `Bearer ${cookies.access_token}`
+          : "",
+      },
+    },
+    onError(err) {
+      console.log(err);
+    },
+    refetchQueries: [
+      {
+        query: BOARD_BY_ID,
+        context: {
+          headers: {
+            Authorization: cookies.access_token
+              ? `Bearer ${cookies.access_token}`
+              : "",
+          },
+        },
+        variables: {
+          boardID: props.match.params.boardID,
         },
       },
-      onError(err) {
-        console.log(err);
-      },
-      refetchQueries: [
-        {
-          query: BOARD_BY_ID,
-        },
-      ],
-    }
-  );
+    ],
+  });
 
   useEffect(() => {
     getBoard();
@@ -88,13 +95,20 @@ const Board = (props) => {
     if (!result.destination) {
       return;
     }
-    console.log(result);
     if (
       result.destination.index === result.source.index &&
       result.destination.droppableId === result.source.droppableId
     ) {
       return;
     }
+    console.log(result);
+    updateList({
+      variables: {
+        id: result.draggableId,
+        listID: result.destination.droppableId,
+        index: result.destination.index,
+      },
+    });
   };
 
   return (
@@ -123,6 +137,7 @@ const Board = (props) => {
             }}>
             {data.board.lists.map((list, index) => (
               <ListCard
+                loading={updateListL}
                 teamID={data.board.team_id}
                 list={list}
                 key={`list_card_index_${index}`}
