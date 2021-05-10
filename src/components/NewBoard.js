@@ -91,7 +91,7 @@ const NewBoard = ({ team }) => {
       }
       onClose={() => modalClose()}
       onOpen={() => setModalOpen(true)}
-      style={{ width: "400px" }}>
+      style={{ width: "calc(250px + 20vw)" }}>
       <Modal.Header>
         <Header as="h3">New Board</Header>
         <hr style={{ marginBottom: "10px" }} />
@@ -100,6 +100,7 @@ const NewBoard = ({ team }) => {
             <Form.Field>
               <label> Enter Board Name</label>
               <input
+                required
                 onChange={onChange}
                 name="name"
                 value={boardInput.name}

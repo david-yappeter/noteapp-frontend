@@ -1,5 +1,5 @@
-import { Card } from "semantic-ui-react";
-import React, { useEffect } from "react";
+import { Card, Message } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
 import logo from "./../images/logo black crop.png";
 import { makeStyles } from "@material-ui/core/styles";
 import { useMutation } from "@apollo/client";
@@ -42,6 +42,7 @@ const useStyles = makeStyles({
 
 const SignupPage = (props) => {
   const [, setCookies] = useCookies();
+  const [errors, setErrors] = useState(null);
   let queryParams = queryString.parse(props.location.search);
   const classes = useStyles();
   const history = useHistory();
@@ -54,6 +55,7 @@ const SignupPage = (props) => {
   const { inputVariables, setInputVariables, onChange, onSubmit } = useForm(
     initialValue,
     () => {
+      setErrors(null);
       registerUser({
         variables: inputVariables,
       });
@@ -61,12 +63,12 @@ const SignupPage = (props) => {
   );
   const [registerUser, { loading }] = useMutation(REGISTER, {
     update(cache, result) {
-      console.log(result);
+      setErrors(null);
       setCookies("access_token", result.data.auth.register.token);
       history.push("/home");
     },
     onError(err) {
-      console.log(err);
+      setErrors({ message: err.graphQLErrors[0].message });
     },
   });
 
@@ -120,15 +122,18 @@ const SignupPage = (props) => {
                 autoFocus
                 className={classes.input}
                 disabled={loading}
+                required
               />
               <input
                 name="email"
+                type="email"
                 value={inputVariables.email}
                 onChange={onChange}
                 placeholder="Enter email"
                 autoFocus
                 className={classes.input}
                 disabled={loading}
+                required
               />
               <input
                 name="password"
@@ -138,6 +143,7 @@ const SignupPage = (props) => {
                 placeholder="Enter password"
                 className={classes.input}
                 disabled={loading}
+                required
               />
               <input
                 name="confirmPassword"
@@ -147,7 +153,15 @@ const SignupPage = (props) => {
                 placeholder="Enter confirm password"
                 className={classes.input}
                 disabled={loading}
+                required
               />
+              {errors && (
+                <Message
+                  style={{ width: "90%", margin: "10px 5%" }}
+                  error
+                  list={[errors.message]}
+                />
+              )}
               <button
                 className={classes.button}
                 onSubmit={onSubmit}

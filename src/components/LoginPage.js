@@ -1,4 +1,4 @@
-import { Card, Dimmer, Loader } from "semantic-ui-react";
+import { Card, Dimmer, Loader, Message } from "semantic-ui-react";
 import React, { useState } from "react";
 import logo from "./../images/logo black crop.png";
 import { makeStyles } from "@material-ui/core/styles";
@@ -43,22 +43,25 @@ const LoginPage = () => {
   const [, setCookies] = useCookies();
   const classes = useStyles();
   const history = useHistory();
+  const [errors, setErrors] = useState(null);
   const initialValue = {
     email: "",
     password: "",
   };
   const { inputVariables, onChange, onSubmit } = useForm(initialValue, () => {
+    setErrors(null);
     loginUser({
       variables: inputVariables,
     });
   });
   const [loginUser, { loading }] = useMutation(LOGIN, {
     update(cache, result) {
+      setErrors(null);
       setCookies("access_token", result.data.auth.login.token);
       history.push("/home");
     },
     onError(err) {
-      console.log(err);
+      setErrors({ message: err.graphQLErrors[0].message });
     },
   });
 
@@ -98,12 +101,14 @@ const LoginPage = () => {
             <form onSubmit={onSubmit}>
               <input
                 name="email"
+                type="email"
                 value={inputVariables.email}
                 onChange={onChange}
                 placeholder="Enter email"
                 autoFocus
                 className={classes.input}
                 disabled={loading}
+                required
               />
               <input
                 name="password"
@@ -113,7 +118,15 @@ const LoginPage = () => {
                 placeholder="Enter password"
                 className={classes.input}
                 disabled={loading}
+                required
               />
+              {errors && (
+                <Message
+                  style={{ width: "90%", margin: "10px 5%" }}
+                  error
+                  list={[errors.message]}
+                />
+              )}
               <button
                 className={classes.button}
                 onSubmit={onSubmit}

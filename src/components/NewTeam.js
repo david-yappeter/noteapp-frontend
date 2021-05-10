@@ -74,7 +74,7 @@ const NewTeam = () => {
           <Icon name="plus" style={{ padding: "0", margin: "0" }} />
         </Label>
       }
-      style={{ width: "500px" }}>
+      style={{ width: "calc(250px + 20vw)" }}>
       <Modal.Header>
         <Header as="h3">New Team</Header>
       </Modal.Header>
@@ -83,6 +83,7 @@ const NewTeam = () => {
           <Form.Field>
             <label> Enter Team Name</label>
             <input
+              required
               autoFocus
               value={teamInput.name}
               onChange={onChange}

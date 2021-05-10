@@ -59,7 +59,7 @@ const LandingPageHeader = () => {
           style={{
             position: "absolute",
             paddingLeft: "10px",
-            width: "550%",
+            width: "calc(400% + 3vw)",
             transform: "translateX(-20%)",
             cursor: "pointer",
           }}
@@ -67,8 +67,9 @@ const LandingPageHeader = () => {
         />
       </Menu.Item>
       <Menu.Item position="right">
-        {menuButtons.map((menuButton) => (
+        {menuButtons.map((menuButton, index) => (
           <Link
+            key={`link_menu_landing_page_index_${index}`}
             to={menuButton.link}
             style={{
               padding: "7px 7px",

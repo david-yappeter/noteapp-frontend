@@ -91,7 +91,7 @@ const NewListCard = ({ board }) => {
         </Card.Content>
       </Card>
       <Modal
-        style={{ width: "400px" }}
+        style={{ width: "calc(250px + 20vw)" }}
         open={modalOpen}
         onClose={() => modalClose()}
         onOpen={() => setModalOpen(true)}>
@@ -99,6 +99,7 @@ const NewListCard = ({ board }) => {
         <Modal.Content>
           <form onSubmit={onSubmit}>
             <input
+              required
               className={classes.input}
               name="name"
               onChange={onChange}

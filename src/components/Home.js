@@ -2,12 +2,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Grid, Icon, Menu, Header, Accordion } from "semantic-ui-react";
-import { useToken } from "../utils/hooks";
+import { useToken, useWindow } from "../utils/hooks";
 import "./../App.css";
 import BoardDelete from "./BoardDelete";
 import HeaderComponent from "./HeaderComponent";
 import NewBoard from "./NewBoard";
 import NewTeam from "./NewTeam";
+import GitHubButton from "react-github-btn";
 
 const useStyles = makeStyles({
   homeBoard: {
@@ -43,6 +44,7 @@ const useStyles = makeStyles({
 
 const Home = () => {
   const classes = useStyles();
+  const windowWidth = useWindow();
   const [activeAccord, setActiveAccord] = useState(-1);
   const [activeItem, setActiveItem] = useState("boards");
   const { user, loading, called } = useToken();
@@ -102,6 +104,7 @@ const Home = () => {
         paddingRight: "5px",
         height: "28px",
         border: "solid 1px rgb(222,222,222)",
+        // fontSize: "calc(0.7em + 0.4vw)",
       }}>
       <Icon bordered name={name} style={{ margin: "auto" }} />
       {text && <span style={{ padding: "0 5px" }}>{text}</span>}
@@ -125,7 +128,7 @@ const Home = () => {
       <>
         <Grid.Row>
           <Grid container>
-            <Grid.Column width={4}>
+            <Grid.Column width={windowWidth >= 992 ? 4 : 16}>
               <Icon
                 bordered
                 style={{
@@ -144,7 +147,7 @@ const Home = () => {
                 {name}
               </span>
             </Grid.Column>
-            <Grid.Column width={12}>
+            <Grid.Column width={windowWidth >= 992 ? 12 : 16}>
               <div
                 style={{
                   display: "flex",
@@ -152,6 +155,7 @@ const Home = () => {
                 }}>
                 {singleTeamItems(team, members).map((item, index) => (
                   <Link
+                    key={`link_single_team_index_item_${index}`}
                     to={item.link}
                     onClick={() =>
                       localStorage.setItem("teamSectionSelection", index)
@@ -250,6 +254,7 @@ const Home = () => {
                       }}
                     />
                   }
+                  key={`sidebar_accordion_team_index_${index}`}
                   text={text}
                   link={link}
                   index={index}
@@ -265,13 +270,53 @@ const Home = () => {
   return (
     <>
       <HeaderComponent />
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transform: "translateY(25px)",
+        }}>
+        <GitHubButton href="https://github.com/david-yappeter/noteapp-frontend">
+          Repository
+        </GitHubButton>
+      </div>
       <Grid container style={{ marginTop: "50px" }}>
-        <Grid.Column width={4}>
-          <Menu fluid secondary vertical>
-            <SidebarMenuItem name="boards" iconName="book">
-              Boards
-            </SidebarMenuItem>
-          </Menu>
+        {windowWidth >= 600 && (
+          <Grid.Column width={windowWidth >= 768 ? 4 : 5}>
+            <Menu fluid secondary vertical>
+              <SidebarMenuItem name="boards" iconName="book">
+                Boards
+              </SidebarMenuItem>
+            </Menu>
+            <div
+              style={{
+                height: "30px",
+                display: "flex",
+                justifyContent: "space-between",
+                paddingRight: "10px",
+              }}>
+              <Header
+                as="span"
+                content="Teams"
+                style={{ margin: "0", alignSelf: "center", color: "black" }}
+              />
+              <NewTeam />
+            </div>
+            <Menu fluid vertical>
+              {called &&
+                !loading &&
+                user?.me.teams.map((team, index) => (
+                  <SidebarTeamMenu
+                    team={team}
+                    index={index}
+                    key={`sidebar_team_menu_index_${index}`}
+                  />
+                ))}
+            </Menu>
+          </Grid.Column>
+        )}
+        {windowWidth < 600 && (
           <div
             style={{
               height: "30px",
@@ -282,24 +327,18 @@ const Home = () => {
             <Header
               as="span"
               content="Teams"
-              style={{ margin: "0", alignSelf: "center", color: "black" }}
+              style={{
+                margin: "0 20px 0 0",
+                alignSelf: "center",
+                color: "black",
+              }}
             />
             <NewTeam />
           </div>
-          <Menu fluid vertical>
-            {called &&
-              !loading &&
-              user?.me.teams.map((team, index) => (
-                <SidebarTeamMenu
-                  team={team}
-                  index={index}
-                  key={`sidebar_team_menu_index_${index}`}
-                />
-              ))}
-          </Menu>
-        </Grid.Column>
-        <Grid.Column width={12}>
-          <Grid columns={4}>
+        )}
+        <Grid.Column
+          width={windowWidth >= 768 ? 12 : windowWidth >= 600 ? 11 : 16}>
+          <Grid columns={windowWidth >= 992 ? 4 : windowWidth >= 750 ? 3 : 2}>
             {called &&
               !loading &&
               user?.me.teams.map((team, index) => (

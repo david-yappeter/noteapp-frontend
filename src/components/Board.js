@@ -5,7 +5,6 @@ import { useCookies } from "react-cookie";
 import { BOARD_BY_ID, LIST_ITEM_MOVE } from "./graphql/index";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import HeaderComponent from "./HeaderComponent";
-import BackgroundImage from "./BackgroundImage";
 import ListCard from "./ListCard";
 import NewListCard from "./NewListCard";
 
@@ -113,7 +112,7 @@ const Board = (props) => {
 
   return (
     <>
-      <BackgroundImage />
+      {/* <BackgroundImage /> */}
       <HeaderComponent />
       <div style={{ marginTop: "20px" }}>
         <Menu
@@ -128,13 +127,13 @@ const Board = (props) => {
             <FluidMenuDiv content={data.board.name} />
           </Menu.Menu>
         </Menu>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <div
-            style={{
-              display: "flex",
-              height: "calc(100vh - 120px)",
-              overflowX: "auto",
-            }}>
+        <div
+          style={{
+            display: "flex",
+            height: "calc(100vh - 120px)",
+            overflowX: "auto",
+          }}>
+          <DragDropContext onDragEnd={onDragEnd}>
             {data.board.lists.map((list, index) => (
               <ListCard
                 loading={updateListL}
@@ -145,8 +144,8 @@ const Board = (props) => {
               />
             ))}
             <NewListCard board={data.board} />
-          </div>
-        </DragDropContext>
+          </DragDropContext>
+        </div>
       </div>
     </>
   );

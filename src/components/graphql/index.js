@@ -6,7 +6,12 @@ import {
   LIST_ITEM_CREATE,
   LIST_ITEM_DELETE,
 } from "./mutation/listItem.js";
-import { REMOVE_MEMBER, TEAM_CREATE } from "./mutation/team.js";
+import {
+  REMOVE_MEMBER,
+  TEAM_CREATE,
+  TEAM_ADD_MEMBER,
+  TEAM_ADD_MEMBER_BY_EMAIL,
+} from "./mutation/team.js";
 import { BOARD_CREATE, BOARD_DELETE } from "./mutation/board.js";
 import { LOGIN, REGISTER } from "./mutation/auth";
 import { LIST_DELETE, LIST_CREATE } from "./mutation/list";
@@ -25,5 +30,7 @@ export {
   LIST_DELETE,
   LIST_CREATE,
   LIST_ITEM_CREATE,
+  TEAM_ADD_MEMBER,
   LIST_ITEM_DELETE,
+  TEAM_ADD_MEMBER_BY_EMAIL,
 };

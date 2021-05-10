@@ -12,7 +12,7 @@ import {
   Popup,
   Search,
 } from "semantic-ui-react";
-import { useToken } from "../utils/hooks";
+import { useToken, useWindow } from "../utils/hooks";
 import { UserSearchReducer } from "../utils/reducer";
 import { REMOVE_MEMBER, TEAM_BY_ID } from "./graphql/index";
 import HeaderComponent from "./HeaderComponent";
@@ -24,6 +24,7 @@ import UserSearch from "./UserSearch";
 const Members = (props, selectSection) => {
   const { teamID } = props.match.params;
   const [cookies] = useCookies();
+  const windowWidth = useWindow();
   const [modalOpen, setModalOpen] = useState(false);
   const { value: state } = UserSearchReducer();
   const { user: meUser, loading: userLoading, called: userCalled } = useToken();
@@ -105,7 +106,10 @@ const Members = (props, selectSection) => {
 
   const BoardsSection = ({ boards }) => {
     return (
-      <Grid container columns={4} style={{ margin: "0" }}>
+      <Grid
+        container
+        columns={windowWidth >= 992 ? 4 : windowWidth >= 600 ? 3 : 2}
+        style={{ margin: "0" }}>
         {boards.map((board, index) => (
           <Grid.Column
             key={`board_section_grid_id_${index}`}
@@ -228,7 +232,36 @@ const Members = (props, selectSection) => {
               </Header>
             )}
           </div>
-          <div>
+          {windowWidth >= 450 && (
+            <div>
+              <RemoveMemberConfirmation
+                handleRemoveMember={handleRemoveMember}
+                name={name}
+                email={email}
+                trigger={
+                  <Button
+                    style={{
+                      width: "120px",
+                      backgroundColor: "red",
+                      color: "white",
+                    }}
+                    onClick={() => setModalOpen(false)}>
+                    <Icon name="x" style={{ float: "left" }} />
+                    {meUser?.me.id === id ? "Leave" : "Remove"}
+                  </Button>
+                }
+              />
+            </div>
+          )}
+        </div>
+        {windowWidth < 450 && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: "10px",
+            }}>
             <RemoveMemberConfirmation
               handleRemoveMember={handleRemoveMember}
               name={name}
@@ -247,7 +280,7 @@ const Members = (props, selectSection) => {
               }
             />
           </div>
-        </div>
+        )}
         <hr style={{ border: "1px solid rgba(240,240,240, 0.8)" }} />
       </>
     );
@@ -264,12 +297,12 @@ const Members = (props, selectSection) => {
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: windowWidth >= 550 ? "space-between" : "center",
             marginBottom: "20px",
           }}>
-          <UserSearch users={members} />
+          {windowWidth >= 550 && <UserSearch users={members} />}
           <Popup
-            content={<InviteMember />}
+            content={<InviteMember teamID={teamID} />}
             trigger={
               <Button
                 style={{
@@ -285,7 +318,6 @@ const Members = (props, selectSection) => {
           />
         </div>
         <hr />
-        {searchLoading || !results ? console.log("aa") : console.log("bb")}
         {searchLoading || searchVal === ""
           ? members.map((member) => (
               <MembersList member={member} teamID={teamID} />

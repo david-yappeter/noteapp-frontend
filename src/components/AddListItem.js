@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Form, Icon } from "semantic-ui-react";
+import { Dimmer, Form, Icon, Loader } from "semantic-ui-react";
 import { useForm, useOutsideAlerter } from "../utils/hooks";
 import { useMutation } from "@apollo/client";
 import { LIST_ITEM_CREATE, TEAM_BY_ID } from "./graphql";
@@ -88,6 +88,9 @@ const AddListItem = ({ list, teamID }) => {
 
   return (
     <>
+      <Dimmer active={loading} inverted>
+        <Loader inverted />
+      </Dimmer>
       {open ? (
         <div ref={wrapperRef}>
           <Form onSubmit={onSubmit}>
@@ -100,11 +103,14 @@ const AddListItem = ({ list, teamID }) => {
               onChange={onChange}
               onSubmit={onSubmit}
               value={inputVariables.name}
+              disabled={loading}
+              required
             />
             <button
               type="submit"
               className={classes.button}
-              onSubmit={onSubmit}>
+              onSubmit={onSubmit}
+              disabled={loading}>
               Create
             </button>
           </Form>

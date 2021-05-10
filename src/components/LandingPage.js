@@ -2,10 +2,11 @@ import React from "react";
 import { useCookies } from "react-cookie";
 import { Redirect, useHistory } from "react-router";
 import { Container, Form, Header, Image } from "semantic-ui-react";
-import { useForm } from "../utils/hooks";
+import { useForm, useWindow } from "../utils/hooks";
 import LandingPageHeader from "./LandingPageHeader";
 
 const LandingPage = () => {
+  const windowWidth = useWindow();
   const [cookies] = useCookies();
   const history = useHistory();
   const initialValue = {
@@ -32,7 +33,7 @@ const LandingPage = () => {
           style={{
             paddingTop: "50px",
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: windowWidth >= 992 ? "space-between" : "center",
             alignItems: "flex-start",
           }}>
           <div
@@ -41,9 +42,9 @@ const LandingPage = () => {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              width: "50%",
+              textAlign: windowWidth >= 992 ? "left" : "center",
             }}>
-            <Header style={{ fontSize: "3em", margin: "0" }}>
+            <Header style={{ fontSize: "calc(1.8em + 2vw)", margin: "0" }}>
               Wello helps teams move work forward.
             </Header>
             <Header
@@ -67,24 +68,26 @@ const LandingPage = () => {
                   justifyContent: "space-around",
                   height: "40px",
                 }}>
-                <input
-                  placeholder="Email"
-                  style={{
-                    borderRadius: "7px",
-                    fontSize: "1.5em",
-                    width: "55%",
-                  }}
-                  name="email"
-                  value={inputVariables.email}
-                  onChange={onChange}
-                  onSubmit={onSubmit}
-                  required
-                />
+                {windowWidth >= 768 && (
+                  <input
+                    placeholder="Email"
+                    style={{
+                      borderRadius: "7px",
+                      fontSize: "1.5em",
+                      width: "55%",
+                    }}
+                    name="email"
+                    value={inputVariables.email}
+                    onChange={onChange}
+                    onSubmit={onSubmit}
+                    required
+                  />
+                )}
                 <button
                   style={{
                     borderRadius: "7px",
                     fontSize: "1.5em",
-                    width: "40%",
+                    width: windowWidth >= 768 ? "40%" : "80%",
                     border: "0",
                     color: "white",
                     backgroundColor: "rgb(36,129,252)",
@@ -95,10 +98,12 @@ const LandingPage = () => {
               </div>
             </Form>
           </div>
-          <Image
-            style={{ width: "40%" }}
-            src="https://d2k1ftgv7pobq7.cloudfront.net/meta/p/res/images/spirit/hero/6a3ccd8e5c9a0e8ebea4235d12da6b24/hero.png"
-          />
+          {windowWidth >= 992 && (
+            <Image
+              style={{ width: "40%" }}
+              src="https://d2k1ftgv7pobq7.cloudfront.net/meta/p/res/images/spirit/hero/6a3ccd8e5c9a0e8ebea4235d12da6b24/hero.png"
+            />
+          )}
         </div>
       </Container>
     </div>

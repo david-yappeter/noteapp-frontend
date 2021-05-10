@@ -47,6 +47,7 @@ const ListCard = ({ list, teamID, loading: updateLoading }) => {
     ],
   });
   return (
+    // <div style={{ backgroundColor: "black", margin: "1px" }}>
     <Card
       draggable
       style={{
@@ -121,6 +122,7 @@ const ListCard = ({ list, teamID, loading: updateLoading }) => {
         <AddListItem list={list} teamID={teamID} />
       </Card.Content>
     </Card>
+    /* </div> */
   );
 };
 export default ListCard;

@@ -17,11 +17,10 @@ import Test from "./components/Test";
 import LandingPage from "./components/LandingPage";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
-import GitHubButton from "react-github-btn";
 
 function App() {
   const httpLink = createUploadLink({
-    uri: process.env.REACT_APP_GRAPHQL_LINK,
+    uri: process.env.REACT_APP_NOTE_APP_GRAPHQL_LINK,
   });
 
   const authMiddleware = new ApolloLink((operation, forward) => {
@@ -45,42 +44,13 @@ function App() {
     <ApolloProvider client={client}>
       <CookiesProvider>
         <BrowserRouter>
-          <div
-            style={{
-              // backgroundImage: `url("https://images.wallpaperscraft.com/image/lake_mountains_trees_129959_1366x768.jpg")`,
-              // backgroundPosition: "center",
-              // backgroundSize: "cover",
-              // backgroundRepeat: "no-repeat",
-              position: "relative",
-              height: "100vh",
-              width: "100vw",
-            }}>
-            <div
-              style={{
-                position: "absolute",
-                left: "50%",
-                zIndex: "10",
-                bottom: "0",
-                transform: "translateY(-100%)",
-                cursor: "pointer",
-              }}>
-              <GitHubButton href="https://github.com/david-yappeter/noteapp-frontend">
-                Repository
-              </GitHubButton>
-            </div>
-
-            <Route exact path="/" component={LandingPage} />
-            <Route exact path="/login" component={LoginPage} />
-            <Route exact path="/signup" component={SignupPage} />
-            <Route exact path="/home" component={Home} />
-            <Route
-              exact
-              path="/team/:teamID/board/:boardID"
-              component={Board}
-            />
-            <Route exact path="/team/:teamID" component={TeamPage} />
-            <Route exact path="/test" component={Test} />
-          </div>
+          <Route exact path="/" component={LandingPage} />
+          <Route exact path="/login" component={LoginPage} />
+          <Route exact path="/signup" component={SignupPage} />
+          <Route exact path="/home" component={Home} />
+          <Route exact path="/team/:teamID/board/:boardID" component={Board} />
+          <Route exact path="/team/:teamID" component={TeamPage} />
+          <Route exact path="/test" component={Test} />
         </BrowserRouter>
       </CookiesProvider>
     </ApolloProvider>

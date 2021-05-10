@@ -14,6 +14,26 @@ const TEAM_CREATE = gql`
   }
 `;
 
+const TEAM_ADD_MEMBER = gql`
+  mutation TEAM_ADD_MEMBER($teamID: ID!, $userID: ID!) {
+    team {
+      add_member(input: { team_id: $teamID, user_id: $userID }) {
+        id
+      }
+    }
+  }
+`;
+
+const TEAM_ADD_MEMBER_BY_EMAIL = gql`
+  mutation TEAM_ADD_MEMBER_BY_EMAIL($teamID: ID!, $email: String!) {
+    team {
+      add_member_by_email(input: { team_id: $teamID, email: $email }) {
+        id
+      }
+    }
+  }
+`;
+
 const REMOVE_MEMBER = gql`
   mutation REMOVE_MEMBER($teamID: ID!, $userID: ID!) {
     team {
@@ -22,4 +42,9 @@ const REMOVE_MEMBER = gql`
   }
 `;
 
-export { REMOVE_MEMBER, TEAM_CREATE };
+export {
+  REMOVE_MEMBER,
+  TEAM_CREATE,
+  TEAM_ADD_MEMBER,
+  TEAM_ADD_MEMBER_BY_EMAIL,
+};
